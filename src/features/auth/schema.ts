@@ -29,6 +29,7 @@ const RegisterSchema = Yup.object({
   "confirm-password": Yup.string()
     .oneOf([Yup.ref("password"), ""], "Passwords must match")
     .required("Password confirmation is required"),
+  agreeToTerms: Yup.boolean().required().oneOf([true]),
 });
 
 export { LoginSchema, RegisterSchema };

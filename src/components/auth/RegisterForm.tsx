@@ -30,6 +30,8 @@ const RegisterForm = ({ onSubmit }: Props) => {
           <FormInput name="email" placeholder="Email" />
           <FormInput
             name="password"
+            minLength={8}
+            pattern="^(?=.*[!@#$%^&*])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
             placeholder="Enter your password"
             type="password"
           />
@@ -58,6 +60,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
 
           <div>
             <button
+              type="submit"
               disabled={!isValid || isSubmitting}
               className={`bg-primary w-full text-white rounded-lg p-4 ${
                 !isValid || isSubmitting

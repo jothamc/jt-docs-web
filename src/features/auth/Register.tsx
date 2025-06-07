@@ -1,17 +1,29 @@
-import React, { use } from "react";
+"use client";
+
+import React from "react";
 import sideImage from "../../../public/pexels-iriser-1381679.jpg";
 import Image from "next/image";
 import Link from "next/link";
-import { Formik } from "formik";
-import { RegisterSchema } from "./schema";
-import FormInput from "@/components/Form/FormInput";
 import RegisterForm from "@/components/auth/RegisterForm";
 import { RegisterSchemaType } from "./types";
+import { useRegisterMutation } from "./slice";
+import { toast } from "react-toastify";
+import { redirect, useRouter } from "next/navigation";
+import { NetworkError } from "@/utils/types";
 
-// const fetchResp = fetch('/')
 const Register = () => {
-  const handleSubmit = (values: RegisterSchemaType) => {
-    // use(fetchResp)
+  const router = useRouter();
+
+  const [register, result] = useRegisterMutation();
+  const handleSubmit = async (values: RegisterSchemaType) => {
+    try {
+      await register(values).unwrap();
+      router.replace("/home");
+    } catch (error) {
+      toast.error((error as NetworkError).data.message, {
+        position: "top-right",
+      });
+    }
   };
 
   return (
