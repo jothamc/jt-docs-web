@@ -2,6 +2,7 @@ import { api } from "@/utils/api";
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { URLS } from "./constants";
 import {
+  DecodedToken,
   LoginResponse,
   LoginSchemaType,
   RegisterResponse,
@@ -52,6 +53,9 @@ const authSlice = createSlice({
       state.error = action.payload;
     },
     logout: (state) => {
+      // Clear cookie
+      document.cookie = "token=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT";
+
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
@@ -64,18 +68,14 @@ const authApiSlice = api.injectEndpoints({
   endpoints: (build) => ({
     login: build.mutation<LoginResponse, LoginSchemaType>({
       query: (body) => ({ url: URLS.login, method: "POST", body }),
-      async onQueryStarted(queryArgument, { dispatch, queryFulfilled }) {
+      async onQueryStarted(_queryArgument, { dispatch, queryFulfilled }) {
         const {
           data: { access_token },
         } = await queryFulfilled;
-        const decoded = jwtDecode<
-          JwtPayload & {
-            sub: string;
-            firstName: string;
-            lastName: string;
-            email: string;
-          }
-        >(access_token);
+        const decoded = jwtDecode<DecodedToken>(access_token);
+
+        // Set token in cookie and state
+        document.cookie = `token=${access_token}; path=/`;
 
         dispatch(
           setCredentials({
@@ -97,14 +97,10 @@ const authApiSlice = api.injectEndpoints({
           const {
             data: { access_token },
           } = await queryFulfilled;
-          const decoded = jwtDecode<
-            JwtPayload & {
-              sub: string;
-              firstName: string;
-              lastName: string;
-              email: string;
-            }
-          >(access_token);
+          const decoded = jwtDecode<DecodedToken>(access_token);
+
+          // Set token in cookie and state
+          document.cookie = `token=${access_token}; path=/`;
 
           dispatch(
             setCredentials({

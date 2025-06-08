@@ -7,7 +7,7 @@ import { LoginSchemaType } from "@/features/auth/types";
 interface Props {
   onSubmit: (values: LoginSchemaType) => void;
 }
-const RegisterForm = ({ onSubmit }: Props) => {
+const LoginForm = ({ onSubmit }: Props) => {
   return (
     <Formik
       validationSchema={LoginSchema}
@@ -17,13 +17,12 @@ const RegisterForm = ({ onSubmit }: Props) => {
       }}
       onSubmit={onSubmit}
     >
-      {({ handleSubmit, isValid, isSubmitting, values, setFieldValue }) => (
+      {({ handleSubmit, isValid, isSubmitting }) => (
         <form onSubmit={handleSubmit} className="space-y-6 ">
           <FormInput name="email" placeholder="Email" />
           <FormInput
             name="password"
-            minLength={8}
-            pattern="^(?=.*[!@#$%^&*])(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+            minLength={4}
             placeholder="Enter your password"
             type="password"
           />
@@ -38,7 +37,7 @@ const RegisterForm = ({ onSubmit }: Props) => {
                   : "cursor-pointer hover:bg-purple-900"
               }`}
             >
-              Create account
+              Login
             </button>
           </div>
         </form>
@@ -47,4 +46,4 @@ const RegisterForm = ({ onSubmit }: Props) => {
   );
 };
 
-export default RegisterForm;
+export default LoginForm;

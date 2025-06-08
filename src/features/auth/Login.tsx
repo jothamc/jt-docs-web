@@ -14,10 +14,10 @@ import { toast } from "react-toastify";
 const Login = () => {
   const router = useRouter();
 
-  const [register, result] = useLoginMutation();
+  const [login, result] = useLoginMutation();
   const handleSubmit = async (values: LoginSchemaType) => {
     try {
-      await register(values).unwrap();
+      await login(values).unwrap();
       router.replace("/home");
     } catch (error) {
       toast.error((error as NetworkError).data.message, {

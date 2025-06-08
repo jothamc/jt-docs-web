@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-// import { decrypt } from "@/utils/session";
-import { cookies } from "next/headers";
-import { selectUser } from "./features/auth/slice";
-import { useAppStore } from "./store/hooks";
+import { jwtDecode, JwtPayload } from "jwt-decode";
+import { DecodedToken } from "./features/auth/types";
 
 // 1. Specify protected and public routes
 const protectedRoutes = ["/home"];
@@ -14,12 +12,21 @@ export default async function middleware(req: NextRequest) {
   const isProtectedRoute = protectedRoutes.includes(path);
   const isPublicRoute = publicRoutes.includes(path);
 
-  // 3. Decrypt the session from the cookie
-  const cookie = (await cookies()).get("session")?.value;
-  const store = useAppStore();
-  const state = store.getState();
-  const user = selectUser(state);
-  // const session = { userId: };
+  // 3. Get user info from the token in cookie
+  const token = req.cookies.get("token")?.value;
+  let user: { id: string } | null = null;
+
+  if (token) {
+    try {
+      const decoded = jwtDecode<DecodedToken>(token);
+      // Check if token is expired
+      if (decoded.exp && decoded.exp * 1000 > Date.now()) {
+        user = { id: decoded.sub };
+      }
+    } catch {
+      // Invalid token
+    }
+  }
 
   // 4. Redirect to /login if the user is not authenticated
   if (isProtectedRoute && !user) {
